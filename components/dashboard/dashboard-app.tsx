@@ -1,6 +1,8 @@
 "use client"
 
 import Image from "next/image"
+import { useState } from "react"
+import { BonosView } from "@/components/dashboard/bonos-view"
 import {
   alertSummary,
   deactivatedByReason,
@@ -37,11 +39,14 @@ import {
   YAxis,
 } from "recharts"
 
-const nav = [
-  { id: "usuarios", label: "Usuarios", icon: UserRound, active: true },
-  { id: "agentes", label: "Agentes", icon: Monitor, active: false },
-  { id: "bonos", label: "Bonos", icon: Gift, active: false },
-] as const
+type NavId = "usuarios" | "agentes" | "bonos" | "freespins"
+
+const mainNav: { id: Exclude<NavId, "freespins">; label: string; icon: typeof UserRound }[] =
+  [
+    { id: "usuarios", label: "Usuarios", icon: UserRound },
+    { id: "agentes", label: "Agentes", icon: Monitor },
+    { id: "bonos", label: "Bonos", icon: Gift },
+  ]
 
 function reasonBadgeClass(reason: string) {
   if (reason === "autoexclusión")
@@ -59,6 +64,7 @@ function levelBadgeClass(nivel: string) {
 }
 
 export function DashboardApp() {
+  const [activeNav, setActiveNav] = useState<NavId>("usuarios")
   const totalDeactivated = 37
 
   return (
@@ -93,27 +99,44 @@ export function DashboardApp() {
               Dash menu
             </p>
             <nav className="flex flex-col gap-0.5">
-              {nav.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
-                    item.active
-                      ? "bg-slate-700/80 text-white"
-                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
-                  )}
-                >
-                  <item.icon className="size-4 shrink-0 opacity-90" />
-                  {item.label}
-                </button>
-              ))}
+              {mainNav.map((item) => {
+                const isActive = activeNav === item.id
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActiveNav(item.id)}
+                    className={cn(
+                      "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
+                      isActive
+                        ? "bg-slate-700/80 text-white"
+                        : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                    )}
+                  >
+                    <item.icon className="size-4 shrink-0 opacity-90" />
+                    {item.label}
+                  </button>
+                )
+              })}
               <div className="mt-0.5 pl-4">
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 rounded-md py-1.5 pl-2 pr-2 text-left text-xs text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
+                  onClick={() => setActiveNav("freespins")}
+                  className={cn(
+                    "flex w-full items-center gap-2 rounded-md py-1.5 pl-2 pr-2 text-left text-xs transition-colors",
+                    activeNav === "freespins"
+                      ? "bg-slate-700/80 text-white"
+                      : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
+                  )}
                 >
-                  <BarChart3 className="size-3.5 text-[#5aa7ff]" />
+                  <BarChart3
+                    className={cn(
+                      "size-3.5 shrink-0",
+                      activeNav === "freespins"
+                        ? "text-white"
+                        : "text-[#5aa7ff]"
+                    )}
+                  />
                   Freespins
                 </button>
               </div>
@@ -126,6 +149,21 @@ export function DashboardApp() {
 
         <main className="min-w-0 flex-1 overflow-x-hidden px-6 py-6 lg:px-8">
           <div className="mx-auto max-w-[1400px] space-y-8">
+            {activeNav === "agentes" && (
+              <section className="rounded-xl border border-slate-200/80 bg-white p-8 shadow-sm">
+                <h1 className="text-xl font-bold text-slate-900">Agentes</h1>
+                <p className="mt-2 text-sm text-slate-600">
+                  Vista en preparación. Selecciona otra sección del menú.
+                </p>
+              </section>
+            )}
+
+            {(activeNav === "bonos" || activeNav === "freespins") && (
+              <BonosView />
+            )}
+
+            {activeNav === "usuarios" && (
+              <>
             {/* —— Bloque 1: Informe desactivaciones —— */}
             <section className="space-y-5">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-[1.65rem]">
@@ -552,6 +590,8 @@ export function DashboardApp() {
                 </article>
               </div>
             </section>
+              </>
+            )}
           </div>
         </main>
       </div>
