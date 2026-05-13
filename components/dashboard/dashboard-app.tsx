@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import {
   alertSummary,
   deactivatedByReason,
@@ -63,21 +64,29 @@ export function DashboardApp() {
   return (
     <div className="flex min-h-screen flex-col bg-[#f4f7fa] font-sans text-slate-900">
       <header className="shrink-0 border-b border-slate-200/80 bg-white px-6 py-3">
-        <div className="inline-block">
-          <span className="text-lg font-bold tracking-tight text-slate-900">
-            INTERPLAY
-          </span>
-          <span className="text-lg font-semibold text-slate-500">.TECH</span>
-          <div className="mt-1 h-0.5 w-full rounded-full bg-[#1d6fff]" />
-        </div>
+        <Image
+          src="/logo-interplay-tech.svg"
+          alt="Interplay Tech"
+          width={560}
+          height={82}
+          className="h-8 w-auto max-w-[min(100%,280px)] md:h-9"
+          priority
+          unoptimized
+        />
       </header>
 
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-[220px] shrink-0 flex-col gap-6 bg-[#0b1220] px-3 py-5 text-slate-200">
           <div className="px-1">
-            <div className="rounded-lg bg-[#1d6fff] px-3 py-2.5 text-center text-sm font-bold tracking-wide text-white shadow-lg shadow-blue-600/20">
-              HONDUBET
-            </div>
+            <Image
+              src="/logo-hondubet.svg"
+              alt="Hondubet"
+              width={245}
+              height={52}
+              className="h-auto w-full"
+              priority
+              unoptimized
+            />
           </div>
           <div>
             <p className="mb-2 px-2 text-[10px] font-medium uppercase tracking-widest text-slate-500">
